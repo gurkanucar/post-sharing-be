@@ -4,14 +4,18 @@ import com.gucardev.postsharingbe.model.Comment;
 import com.gucardev.postsharingbe.model.Post;
 import com.gucardev.postsharingbe.model.User;
 import com.gucardev.postsharingbe.repository.PostRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
@@ -43,8 +47,12 @@ public class PostService {
         // it's checking users at the same time
         User commentUser = userService.getUserByUsername(comment.getUser().getUsername());
         comment.setUser(commentUser);
+        comment.setId(new ObjectId().toString());
         User postUser = userService.getUserByUsername(post.getUser().getUsername());
         post.setUser(postUser);
+        if (post.getComments() == null) {
+            post.setComments(new ArrayList<Comment>());
+        }
         post.getComments().add(comment);
         return postRepository.save(post);
     }
@@ -67,7 +75,11 @@ public class PostService {
     public Post addLike(Post post, User user) {
         // it's checking users at the same time
         User likedUser = userService.getUserByUsername(user.getUsername());
+        if (post.getLikedUsers() == null) {
+            post.setLikedUsers(new ArrayList<User>());
+        }
         post.getLikedUsers().add(likedUser);
+        log.info(String.valueOf(post.getLikedUsers().size()));
         return postRepository.save(post);
     }
 
