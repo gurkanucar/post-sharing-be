@@ -7,7 +7,11 @@ import com.gucardev.postsharingbe.repository.PostRepository;
 import com.gucardev.postsharingbe.request.CommentRequest;
 import com.gucardev.postsharingbe.request.LikeRequest;
 import lombok.extern.slf4j.Slf4j;
+
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,11 +26,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
+    private final MongoTemplate mongoTemplate;
+
 
     public PostService(PostRepository postRepository,
-                       UserService userService) {
+                       UserService userService, MongoTemplate mongoTemplate) {
         this.postRepository = postRepository;
         this.userService = userService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     public Post create(Post post) {
@@ -41,6 +48,8 @@ public class PostService {
     }
 
     public Post getPostByID(String postID) {
+       /* Query query = new Query().addCriteria(Criteria.where("id").is(new ObjectId(postID)));
+        log.info(String.valueOf(mongoTemplate.find(query, Post.class)));*/
         return postRepository.findPostById(postID).orElseThrow(() -> new RuntimeException("post not found!"));
     }
 
