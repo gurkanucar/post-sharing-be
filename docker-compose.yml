@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  mongodb:
+    image: 'mongo'
+    ports:
+      - 27017:27017
+    container_name: mongodb
+    volumes:
+      - ./data:/data/db
+    networks:
+      - shared-net
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    depends_on:
+      - mongodb
+    networks:
+      - shared-net
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./data:/data/db
+
+  app:
+    image: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    links:
+      - mongodb
+    depends_on:
+        - mongodb
+    networks:
+        - shared-net
+networks:
+  shared-net:
+    driver: bridge
