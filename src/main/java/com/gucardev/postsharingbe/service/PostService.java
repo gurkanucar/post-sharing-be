@@ -92,8 +92,12 @@ public class PostService {
         User requestUser = likeRequest.getUser();
         // it's checking users at the same time
         User likedUser = userService.getUserByUsername(requestUser.getUsername());
-        if (post.getLikedUsers() == null) {
+        if (post.getLikedUsers() != null && userService.isUserContains(post.getLikedUsers(), requestUser.getUsername())) {
+            log.info("call remove like: " + likeRequest.getUser().getUsername());
+            return removeLike(likeRequest);
+        } else if (post.getLikedUsers() == null) {
             post.setLikedUsers(new ArrayList<User>());
+            log.info("create liked users list");
         }
         post.getLikedUsers().add(likedUser);
         log.info(String.valueOf(post.getLikedUsers().size()));
@@ -101,13 +105,14 @@ public class PostService {
     }
 
     public Post removeLike(LikeRequest likeRequest) {
+        log.info("Removelike: " + likeRequest.getUser().getUsername());
         Post post = getPostByID(likeRequest.getPost().getId());
         User requestUser = likeRequest.getUser();
         // it's checking users at the same time
         User unLikedUser = userService.getUserByUsername(requestUser.getUsername());
         var updatedLikes = post.getLikedUsers()
                 .stream()
-                .filter(x -> !Objects.equals(x.getId(), unLikedUser.getId()))
+                .filter(x -> !x.getUsername().equals(unLikedUser.getUsername()))
                 .collect(Collectors.toList());
         post.setLikedUsers(updatedLikes);
         return postRepository.save(post);
