@@ -3,6 +3,8 @@ package com.gucardev.postsharingbe.controller;
 import com.gucardev.postsharingbe.model.Comment;
 import com.gucardev.postsharingbe.model.Post;
 import com.gucardev.postsharingbe.model.User;
+import com.gucardev.postsharingbe.request.CommentRequest;
+import com.gucardev.postsharingbe.request.LikeRequest;
 import com.gucardev.postsharingbe.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,23 +39,23 @@ public class PostController {
     }
 
     @PostMapping("/comment")
-    public ResponseEntity<Post> addComment(@RequestBody Post post, @RequestBody Comment comment) {
-        return ResponseEntity.ok(postService.addComment(post, comment));
+    public ResponseEntity<Post> addComment(@RequestBody CommentRequest commentRequest) {
+        return ResponseEntity.ok(postService.addComment(commentRequest));
     }
 
     @DeleteMapping("/comment")
-    public ResponseEntity<Post> removeComment(@RequestBody Post post, @RequestBody Comment comment) {
-        return ResponseEntity.ok(postService.removeComment(post, comment));
+    public ResponseEntity<Post> removeComment(@RequestBody CommentRequest commentRequest) {
+        return ResponseEntity.ok(postService.removeComment(commentRequest));
     }
 
     @PostMapping("/like")
-    public ResponseEntity<Post> addLike(@RequestBody Post post, @RequestBody User user) {
-        return ResponseEntity.ok(postService.addLike(post, user));
+    public ResponseEntity<Post> addLike(@RequestBody LikeRequest likeRequest) {
+        return ResponseEntity.ok(postService.addLike(likeRequest));
     }
 
     @DeleteMapping("/like")
-    public ResponseEntity<Post> removeLike(@RequestBody Post post, @RequestBody User user) {
-        return ResponseEntity.ok(postService.removeLike(post, user));
+    public ResponseEntity<Post> removeLike(@RequestBody LikeRequest likeRequest) {
+        return ResponseEntity.ok(postService.removeLike(likeRequest));
     }
 
 

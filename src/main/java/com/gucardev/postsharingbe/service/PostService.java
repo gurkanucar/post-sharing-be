@@ -4,6 +4,8 @@ import com.gucardev.postsharingbe.model.Comment;
 import com.gucardev.postsharingbe.model.Post;
 import com.gucardev.postsharingbe.model.User;
 import com.gucardev.postsharingbe.repository.PostRepository;
+import com.gucardev.postsharingbe.request.CommentRequest;
+import com.gucardev.postsharingbe.request.LikeRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,9 @@ public class PostService {
     }
 
 
-    public Post addComment(Post post, Comment comment) {
+    public Post addComment(CommentRequest commentRequest) {
+        Post post = commentRequest.getPost();
+        Comment comment = commentRequest.getComment();
         // it's checking users at the same time
         User commentUser = userService.getUserByUsername(comment.getUser().getUsername());
         comment.setUser(commentUser);
@@ -57,7 +61,9 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post removeComment(Post post, Comment comment) {
+    public Post removeComment(CommentRequest commentRequest) {
+        Post post = commentRequest.getPost();
+        Comment comment = commentRequest.getComment();
         // it's checking users at the same time
         User commentUser = userService.getUserByUsername(comment.getUser().getUsername());
         comment.setUser(commentUser);
@@ -72,7 +78,9 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post addLike(Post post, User user) {
+    public Post addLike(LikeRequest likeRequest) {
+        Post post = likeRequest.getPost();
+        User user = likeRequest.getUser();
         // it's checking users at the same time
         User likedUser = userService.getUserByUsername(user.getUsername());
         if (post.getLikedUsers() == null) {
@@ -83,7 +91,9 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post removeLike(Post post, User user) {
+    public Post removeLike(LikeRequest likeRequest) {
+        Post post = likeRequest.getPost();
+        User user = likeRequest.getUser();
         // it's checking users at the same time
         User unLikedUser = userService.getUserByUsername(user.getUsername());
         var updatedLikes = post.getLikedUsers()
