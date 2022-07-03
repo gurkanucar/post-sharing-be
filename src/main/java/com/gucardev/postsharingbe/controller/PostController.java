@@ -9,6 +9,7 @@ import com.gucardev.postsharingbe.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @RestController
@@ -29,7 +30,7 @@ public class PostController {
     }
 
     @GetMapping("/{postID}")
-    public ResponseEntity<Post> getAllPosts(String postID) {
+    public ResponseEntity<Post> getPostById(@PathVariable String postID) {
         return ResponseEntity.ok(postService.getPostByID(postID));
     }
 
