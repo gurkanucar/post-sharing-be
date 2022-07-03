@@ -55,7 +55,7 @@ public class PostService {
 
 
     public Post addComment(CommentRequest commentRequest) {
-        Post post = commentRequest.getPost();
+        Post post = getPostByID(commentRequest.getPost().getId());
         Comment comment = commentRequest.getComment();
         // it's checking users at the same time
         User commentUser = userService.getUserByUsername(comment.getUser().getUsername());
@@ -71,7 +71,7 @@ public class PostService {
     }
 
     public Post removeComment(CommentRequest commentRequest) {
-        Post post = commentRequest.getPost();
+        Post post = getPostByID(commentRequest.getPost().getId());
         Comment comment = commentRequest.getComment();
         // it's checking users at the same time
         User commentUser = userService.getUserByUsername(comment.getUser().getUsername());
@@ -88,10 +88,10 @@ public class PostService {
     }
 
     public Post addLike(LikeRequest likeRequest) {
-        Post post = likeRequest.getPost();
-        User user = likeRequest.getUser();
+        Post post = getPostByID(likeRequest.getPost().getId());
+        User requestUser = likeRequest.getUser();
         // it's checking users at the same time
-        User likedUser = userService.getUserByUsername(user.getUsername());
+        User likedUser = userService.getUserByUsername(requestUser.getUsername());
         if (post.getLikedUsers() == null) {
             post.setLikedUsers(new ArrayList<User>());
         }
@@ -101,10 +101,10 @@ public class PostService {
     }
 
     public Post removeLike(LikeRequest likeRequest) {
-        Post post = likeRequest.getPost();
-        User user = likeRequest.getUser();
+        Post post = getPostByID(likeRequest.getPost().getId());
+        User requestUser = likeRequest.getUser();
         // it's checking users at the same time
-        User unLikedUser = userService.getUserByUsername(user.getUsername());
+        User unLikedUser = userService.getUserByUsername(requestUser.getUsername());
         var updatedLikes = post.getLikedUsers()
                 .stream()
                 .filter(x -> !Objects.equals(x.getId(), unLikedUser.getId()))
