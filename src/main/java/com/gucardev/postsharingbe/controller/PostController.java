@@ -59,5 +59,10 @@ public class PostController {
         return ResponseEntity.ok(postService.removeLike(likeRequest));
     }
 
+    @DeleteMapping("/{postID}")
+    public ResponseEntity<?> deletePostByID(@PathVariable String postID) {
+        postService.deletePostByID(postID);
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -53,6 +53,11 @@ public class PostService {
         return postRepository.findPostById(postID).orElseThrow(() -> new RuntimeException("post not found!"));
     }
 
+    public void deletePostByID(String postID) {
+        var post = postRepository.findPostById(postID).orElseThrow(() -> new RuntimeException("post not found!"));
+        postRepository.delete(post);
+    }
+
 
     public Post addComment(CommentRequest commentRequest) {
         Post post = getPostByID(commentRequest.getPost().getId());
