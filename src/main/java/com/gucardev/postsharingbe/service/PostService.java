@@ -1,7 +1,7 @@
 package com.gucardev.postsharingbe.service;
 
 import com.gucardev.postsharingbe.model.Comment;
-import com.gucardev.postsharingbe.model.Post;
+import com.gucardev.postsharingbe.model.post.Post;
 import com.gucardev.postsharingbe.model.User;
 import com.gucardev.postsharingbe.repository.PostRepository;
 import com.gucardev.postsharingbe.request.CommentRequest;
@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

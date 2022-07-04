@@ -1,15 +1,12 @@
 package com.gucardev.postsharingbe.controller;
 
-import com.gucardev.postsharingbe.model.Comment;
-import com.gucardev.postsharingbe.model.Post;
-import com.gucardev.postsharingbe.model.User;
+import com.gucardev.postsharingbe.model.post.Post;
 import com.gucardev.postsharingbe.request.CommentRequest;
 import com.gucardev.postsharingbe.request.LikeRequest;
 import com.gucardev.postsharingbe.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @RestController

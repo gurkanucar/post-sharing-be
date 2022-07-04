@@ -1,6 +1,8 @@
-package com.gucardev.postsharingbe.model;
+package com.gucardev.postsharingbe.model.post;
 
 
+import com.gucardev.postsharingbe.model.Comment;
+import com.gucardev.postsharingbe.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,20 +20,11 @@ import java.util.List;
 @Builder
 @Document
 public class Post {
-
     @Id
     private String id;
-
     private String content;
-
     private User user;
-
     private List<User> likedUsers;
-
     private List<Comment> comments;
-
     private LocalDateTime created;
-
-
-
 }
