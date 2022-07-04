@@ -1,5 +1,5 @@
 package com.gucardev.postsharingbe.model;
 
 public enum NotificationType {
-    LIKE, COMMENT, SHARE
+    LIKE, COMMENT, SHARE, NEW_POST
 }
