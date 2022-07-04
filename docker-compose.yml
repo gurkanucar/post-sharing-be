@@ -21,9 +21,15 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
     ports:
       - '8081:8081'
+    restart: always
     volumes:
       - ./data:/data/db
-
+  redisdb:
+    image: "redis"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
   app:
     image: backend
     build:
@@ -35,9 +41,12 @@ services:
     links:
       - mongodb
     depends_on:
-        - mongodb
+      - mongodb
+      - redisdb
     networks:
-        - shared-net
+      - shared-net
+    environment:
+      SPRING_REDIS_HOST: redisdb
 networks:
   shared-net:
     driver: bridge
