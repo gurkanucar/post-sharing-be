@@ -1,6 +1,6 @@
 package com.gucardev.postsharingbe.controller;
 
-import com.gucardev.postsharingbe.model.NotificationStorage;
+import com.gucardev.postsharingbe.model.Notification;
 import com.gucardev.postsharingbe.service.NotificationStorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class NotificationStorageController {
     }
 
     @GetMapping("/{userID}")
-    public ResponseEntity<List<NotificationStorage>> getNotificationsByUserID(@PathVariable String userID) {
+    public ResponseEntity<List<Notification>> getNotificationsByUserID(@PathVariable String userID) {
         return ResponseEntity.ok(notifService.getNotificationsByUserID(userID));
     }
 
