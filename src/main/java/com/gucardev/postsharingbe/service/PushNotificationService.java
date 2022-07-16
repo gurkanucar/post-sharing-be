@@ -24,13 +24,20 @@ public class PushNotificationService {
         this.notificationStorageRepository = notificationStorageRepository;
     }
 
+    private List<Notification> getNotifs(String userID) {
+        var notifs = notificationStorageRepository.findByUserToIdAndDeliveredFalse(userID);
+        notifs.forEach(x -> x.setDelivered(true));
+        notificationStorageRepository.saveAll(notifs);
+        return notifs;
+    }
 
     public Flux<ServerSentEvent<List<Notification>>> getNotificationsByUserToID(String userID) {
+
         if (userID != null && !userID.isBlank()) {
-            return Flux.interval(Duration.ofSeconds(6))
+            return Flux.interval(Duration.ofSeconds(1))
                     .publishOn(Schedulers.boundedElastic())
                     .map(sequence -> ServerSentEvent.<List<Notification>>builder().id(String.valueOf(sequence))
-                            .event("user-list-event").data(notificationStorageRepository.findByUserToIdAndDeliveredFalse(userID))
+                            .event("user-list-event").data(getNotifs(userID))
                             .build());
         }
 
