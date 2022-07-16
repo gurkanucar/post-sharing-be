@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   mongodb:
     image: 'mongo'
@@ -24,12 +23,6 @@ services:
     restart: always
     volumes:
       - ./data:/data/db
-  redisdb:
-    image: "redis"
-    ports:
-      - "6379:6379"
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
   app:
     image: backend
     build:
@@ -42,11 +35,8 @@ services:
       - mongodb
     depends_on:
       - mongodb
-      - redisdb
     networks:
       - shared-net
-    environment:
-      SPRING_REDIS_HOST: redisdb
 networks:
   shared-net:
     driver: bridge
