@@ -18,20 +18,12 @@ import java.util.List;
 @Builder
 @Document
 public class Post {
-
     @Id
     private String id;
-
     private String content;
-
     private User user;
-
     private List<User> likedUsers;
-
     private List<Comment> comments;
-
     private LocalDateTime created;
-
-
-
+    private String postImageUrl;
 }
