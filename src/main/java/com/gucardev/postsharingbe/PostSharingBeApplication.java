@@ -1,12 +1,11 @@
 package com.gucardev.postsharingbe;
 
-import com.gucardev.postsharingbe.model.Comment;
-import com.gucardev.postsharingbe.model.Post;
-import com.gucardev.postsharingbe.model.User;
+import com.gucardev.postsharingbe.model.*;
 import com.gucardev.postsharingbe.repository.PostRepository;
 import com.gucardev.postsharingbe.repository.UserRepository;
 import com.gucardev.postsharingbe.request.CommentRequest;
 import com.gucardev.postsharingbe.request.LikeRequest;
+import com.gucardev.postsharingbe.service.NotificationStorageService;
 import com.gucardev.postsharingbe.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
 @EnableMongoRepositories
 public class PostSharingBeApplication implements CommandLineRunner {
 
@@ -32,6 +31,9 @@ public class PostSharingBeApplication implements CommandLineRunner {
 
     @Autowired
     PostService postService;
+
+    @Autowired
+    NotificationStorageService notificationStorageService;
 
     @Override
     public void run(String... args) throws Exception {
@@ -50,13 +52,15 @@ public class PostSharingBeApplication implements CommandLineRunner {
         Post post5 = postService.create(Post.builder().content("Post5 Lorem ipsum dolor sit amet, consectetur adipiscing elit.").user(user2).build());
         Post post6 = postService.create(Post.builder().content("Post6 Lorem ipsum dolor sit amet, consectetur adipiscing elit.").user(user2).build());
 
-        Comment comment = Comment.builder().user(user).content("comment 1").build();
-        Comment comment2 = Comment.builder().user(user3).content("comment 2").build();
-        Comment comment3 = Comment.builder().user(user).content("comment 3").build();
+//        Comment comment = Comment.builder().user(user).content("comment 1").build();
+//        Comment comment2 = Comment.builder().user(user3).content("comment 2").build();
+//        Comment comment3 = Comment.builder().user(user).content("comment 3").build();
 
-        postService.addComment(new CommentRequest(post2, comment));
-        postService.addComment(new CommentRequest(post2, comment2));
-        postService.addComment(new CommentRequest(post1, comment3));
+        for (int i = 0; i < 10; i++) {
+            postService.addComment(new CommentRequest(post2, Comment.builder().user(user).content("comment " + i).build()));
+            postService.addComment(new CommentRequest(post2, Comment.builder().user(user3).content("comment  " + i).build()));
+            postService.addComment(new CommentRequest(post1, Comment.builder().user(user).content("comment " + i).build()));
+        }
 
 
         postService.addLike(new LikeRequest(post1, user2));
@@ -64,6 +68,38 @@ public class PostSharingBeApplication implements CommandLineRunner {
         postService.addLike(new LikeRequest(post2, user));
         postService.addLike(new LikeRequest(post2, user3));
 
+
+        notificationStorageService.clear();
+
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("notif 1 comment")
+                .notificationType(NotificationType.COMMENT)
+                .userFrom(user2)
+                .userTo(user).build());
+
+
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("notif 2 comment")
+                .notificationType(NotificationType.COMMENT)
+                .userFrom(user2)
+                .userTo(user).build());
+
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("notif 1 for user2 comment")
+                .notificationType(NotificationType.COMMENT)
+                .userFrom(user)
+                .userTo(user2).build());
+
+
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("notif 3 like")
+                .notificationType(NotificationType.LIKE)
+                .userFrom(user2)
+                .userTo(user).build());
 
     }
 }
