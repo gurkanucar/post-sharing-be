@@ -26,5 +26,6 @@ public class Notification {
     private NotificationType notificationType;
 
     private boolean delivered;
+    private boolean read;
 
 }

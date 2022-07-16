@@ -39,7 +39,7 @@ public class NotificationStorageService {
     public Notification changeNotifStatusToRead(String notifID) {
         var notif = notifRepository.findById(notifID)
                 .orElseThrow(() -> new RuntimeException("not found!"));
-        notif.setDelivered(true);
+        notif.setRead(true);
         return notifRepository.save(notif);
     }
 
