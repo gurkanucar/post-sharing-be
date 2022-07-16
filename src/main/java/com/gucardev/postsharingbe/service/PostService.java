@@ -124,4 +124,8 @@ public class PostService {
     }
 
 
+    public List<Comment> getCommentsByPostID(String postID) {
+        Post post = getPostByID(postID);
+        return post.getComments();
+    }
 }
