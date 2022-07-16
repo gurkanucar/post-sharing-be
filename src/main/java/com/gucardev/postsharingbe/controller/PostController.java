@@ -1,13 +1,16 @@
 package com.gucardev.postsharingbe.controller;
 
 import com.gucardev.postsharingbe.model.Comment;
+import com.gucardev.postsharingbe.model.Notification;
 import com.gucardev.postsharingbe.model.Post;
 import com.gucardev.postsharingbe.model.User;
 import com.gucardev.postsharingbe.request.CommentRequest;
 import com.gucardev.postsharingbe.request.LikeRequest;
 import com.gucardev.postsharingbe.service.PostService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -23,6 +26,10 @@ public class PostController {
         this.postService = postService;
     }
 
+    @GetMapping("/stream")
+    public Flux<ServerSentEvent<List<Post>>> streamPosts() {
+        return postService.streamPosts();
+    }
 
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {

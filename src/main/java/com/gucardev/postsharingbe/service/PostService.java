@@ -1,8 +1,6 @@
 package com.gucardev.postsharingbe.service;
 
-import com.gucardev.postsharingbe.model.Comment;
-import com.gucardev.postsharingbe.model.Post;
-import com.gucardev.postsharingbe.model.User;
+import com.gucardev.postsharingbe.model.*;
 import com.gucardev.postsharingbe.repository.PostRepository;
 import com.gucardev.postsharingbe.request.CommentRequest;
 import com.gucardev.postsharingbe.request.LikeRequest;
@@ -10,10 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,18 +27,22 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final MongoTemplate mongoTemplate;
+    private final NotificationStorageService notificationStorageService;
 
 
     public PostService(PostRepository postRepository,
-                       UserService userService, MongoTemplate mongoTemplate) {
+                       UserService userService, MongoTemplate mongoTemplate, NotificationStorageService notificationStorageService) {
         this.postRepository = postRepository;
         this.userService = userService;
         this.mongoTemplate = mongoTemplate;
+        this.notificationStorageService = notificationStorageService;
     }
 
     public Post create(Post post) {
         User user = userService.getUserByUsername(post.getUser().getUsername());
         post.setUser(user);
+        post.setComments(new ArrayList<>());
+        post.setLikedUsers(new ArrayList<>());
         post.setCreated(LocalDateTime.now());
         return postRepository.save(post);
     }
@@ -68,10 +72,13 @@ public class PostService {
         comment.setId(new ObjectId().toString());
         User postUser = userService.getUserByUsername(post.getUser().getUsername());
         post.setUser(postUser);
-        if (post.getComments() == null) {
-            post.setComments(new ArrayList<Comment>());
-        }
         post.getComments().add(comment);
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("new comment from " + commentUser.getUsername())
+                .notificationType(NotificationType.COMMENT)
+                .userFrom(commentUser)
+                .userTo(postUser).build());
         return postRepository.save(post);
     }
 
@@ -94,18 +101,20 @@ public class PostService {
 
     public Post addLike(LikeRequest likeRequest) {
         Post post = getPostByID(likeRequest.getPost().getId());
-        User requestUser = likeRequest.getUser();
+        User postOfUser = post.getUser();
         // it's checking users at the same time
-        User likedUser = userService.getUserByUsername(requestUser.getUsername());
-        if (post.getLikedUsers() != null && userService.isUserContains(post.getLikedUsers(), requestUser.getUsername())) {
+        User likedUser = userService.getUserByUsername(likeRequest.getUser().getUsername());
+        if (post.getLikedUsers() != null && userService.isUserContains(post.getLikedUsers(), likeRequest.getUser().getUsername())) {
             log.info("call remove like: " + likeRequest.getUser().getUsername());
             return removeLike(likeRequest);
-        } else if (post.getLikedUsers() == null) {
-            post.setLikedUsers(new ArrayList<User>());
-            log.info("create liked users list");
         }
         post.getLikedUsers().add(likedUser);
-        log.info(String.valueOf(post.getLikedUsers().size()));
+        notificationStorageService.createNotificationStorage(Notification.builder()
+                .delivered(false)
+                .content("like from " + likedUser.getUsername())
+                .notificationType(NotificationType.LIKE)
+                .userFrom(likedUser)
+                .userTo(postOfUser).build());
         return postRepository.save(post);
     }
 
@@ -127,5 +136,14 @@ public class PostService {
     public List<Comment> getCommentsByPostID(String postID) {
         Post post = getPostByID(postID);
         return post.getComments();
+    }
+
+    public Flux<ServerSentEvent<List<Post>>> streamPosts() {
+        return Flux.interval(Duration.ofSeconds(2))
+                .publishOn(Schedulers.boundedElastic())
+                .map(sequence -> ServerSentEvent.<List<Post>>builder().id(String.valueOf(sequence))
+                        .event("post-list-event").data(getAll())
+                        .build());
+
     }
 }
