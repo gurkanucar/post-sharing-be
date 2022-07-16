@@ -29,14 +29,7 @@ public class UserService {
     }
 
     protected boolean isUserContains(final List<User> list, final String username) {
-        list.forEach(x -> log.info(x.getUsername()));
-
-        log.info("search: " + username);
-
-        var result = list.stream().anyMatch(o -> o.getUsername().equals(username));
-        log.info("result: " + result);
-
-        return result;
+        return list.stream().anyMatch(o -> o.getUsername().equals(username));
     }
 
 
