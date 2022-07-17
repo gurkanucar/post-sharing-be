@@ -45,6 +45,6 @@
 
 [https://www.youtube.com/watch?v=mqDtfS2quto](https://www.youtube.com/watch?v=mqDtfS2quto)
 
-### Backend:
+### Frontend:
 
 [https://github.com/gurkanucar/post-sharing-fe](https://github.com/gurkanucar/post-sharing-fe)
